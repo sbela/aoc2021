@@ -45,6 +45,6 @@ int main()
         input.close();
     }
     else
-        cout << "day.txt not open!\n";
+        cout << "input.txt not open!\n";
     return 0;
 }
