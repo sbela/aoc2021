@@ -65,7 +65,7 @@ int main()
             for (int x : fishes)
                 table[x]++;
             
-            for (int i = 0; i < 80; ++i) 
+            for (int i = 0; i < 256; ++i)
                 NextDay(table);
             
             cout << "Fish #: " << CountFish(table) << endl;
