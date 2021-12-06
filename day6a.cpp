@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <vector>
 #include <ostream>
@@ -43,17 +44,43 @@ static const vector<T> tokenize(const string &text, char token)
     return data;
 }
 
-void calculate(vector<char> &vec, size_t from, size_t to, vector<char> &add)
+size_t how_many_fish(int start, int days)
 {
-    for (size_t fish = from; fish < to; ++fish)
+    if (days >= start)
     {
-        vec[fish]--;
-        if (vec[fish] == -1)
+        size_t fish = 1 + ((days - start) / 7);
+        size_t fishes = 0;        
+        for (size_t i = 0; i < fish; ++i)
         {
-            add.emplace_back(NEW_TIMER_VALUE);
-            vec[fish] = TIMER_RESET_VALUE;
+            fishes += how_many_fish(9, (days - start - (i * 7)));
         }
+        cout << "FISH: s:" << start << " d:" << days << " f:" << fish << " sum:" << fish + fishes << endl;
+        return fish + fishes;
     }
+    cout << "FISH: s:" << start << " d:" << days << " f:0" << " sum:0" << endl;
+    return 0;
+}
+
+constexpr int N = 9;
+
+size_t CountFish(size_t *table)
+{
+    size_t result = 0;
+    for (int i = 0; i < N; ++i)
+        result += table[i];
+    return result;
+}
+
+void NextDay(size_t *table)
+{
+    size_t back_table[N];
+    memset(back_table, 0, sizeof(back_table));
+    back_table[8] += table[0];
+    back_table[6] += table[0];
+
+    for (int i = 1; i < N; ++i)
+        back_table[i - 1] += table[i];
+    memcpy(table, back_table, sizeof(back_table));
 }
 
 int main()
@@ -65,39 +92,15 @@ int main()
         string line;
         if (getline(input, line))
         {
-            vector<char> fishes = tokenize<char>(line, ',');
-            fishes.reserve(20*1024*1024*1024ULL);
-            for (int i = 0; i <= 256; ++i)
-            {
-                if (i == 0)
-                    cout << "  Initial state: " << line << endl;
-                else
-                {
-                    auto start = chrono::steady_clock::now();
-                    vector<char> add1;
-                    vector<char> add2;
-                    vector<char> add3;
-                    vector<char> add4;
-                    size_t size = fishes.size();
-                    size_t batch = size / 4;
-                    thread t1(calculate, ref(fishes), 0, batch, ref(add1));
-                    thread t2(calculate, ref(fishes), batch, 2 * batch, ref(add2));
-                    thread t3(calculate, ref(fishes), 2 * batch, 3 * batch, ref(add3));
-                    thread t4(calculate, ref(fishes), 3 * batch, size, ref(add4));
-                    t1.join();
-                    t2.join();
-                    t3.join();
-                    t4.join();
-                    fishes.insert(fishes.end(), add1.begin(), add1.end());
-                    fishes.insert(fishes.end(), add2.begin(), add2.end());
-                    fishes.insert(fishes.end(), add3.begin(), add3.end());
-                    fishes.insert(fishes.end(), add4.begin(), add4.end());
-                    auto end = chrono::steady_clock::now();
-                    chrono::duration<double> elapsed_seconds = end - start;
-                    cout << "After " << setw(2) << i << " day(s): " << fishes.size() << " time:" << elapsed_seconds.count() << endl;
-                }
-            }
-            cout << "Fish #: " << fishes.size() << endl;
+            vector<int> fishes = tokenize<int>(line, ',');
+            size_t table[N];
+            for (int x : fishes)
+                table[x]++;
+            
+            for (int i = 0; i < 256; ++i) 
+                NextDay(table);
+            
+            cout << "Fish #: " << CountFish(table) << endl;
         }
         else
             cout << "Invalid input" << endl;
