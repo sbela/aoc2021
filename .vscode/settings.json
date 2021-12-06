@@ -2,6 +2,10 @@
     "files.associations": {
         "ostream": "cpp",
         "type_traits": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "thread": "cpp",
+        "algorithm": "cpp",
+        "iomanip": "cpp",
+        "vector": "cpp"
     }
 }

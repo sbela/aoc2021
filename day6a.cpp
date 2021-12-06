@@ -50,7 +50,7 @@ void calculate(vector<char> &vec, size_t from, size_t to, vector<char> &add)
         vec[fish]--;
         if (vec[fish] == -1)
         {
-            add.push_back(NEW_TIMER_VALUE);
+            add.emplace_back(NEW_TIMER_VALUE);
             vec[fish] = TIMER_RESET_VALUE;
         }
     }
@@ -66,6 +66,7 @@ int main()
         if (getline(input, line))
         {
             vector<char> fishes = tokenize<char>(line, ',');
+            fishes.reserve(20*1024*1024*1024ULL);
             for (int i = 0; i <= 256; ++i)
             {
                 if (i == 0)
