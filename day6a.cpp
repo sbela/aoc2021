@@ -43,8 +43,8 @@ size_t CountFish(size_t *table)
 void NextDay(size_t *table)
 {
     size_t back_table[N] = { 0 };
-    back_table[8] += table[0];
-    back_table[6] += table[0];
+    back_table[8] = table[0];
+    back_table[6] = table[0];
 
     for (int i = 1; i < N; ++i)
         back_table[i - 1] += table[i];
