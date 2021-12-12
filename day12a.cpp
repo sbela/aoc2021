@@ -44,7 +44,7 @@ struct Node
     explicit Node(const string &node, const string &to) : _node{node}, _adjacent{to} {}
 
     string _node;
-    size_t _weight{0};
+    size_t _visited{0};
     list<string> _adjacent;
 
     bool operator==(const string &other) const
@@ -65,12 +65,12 @@ struct Node
 
     void operator++(int)
     {
-        _weight++;
+        _visited++;
     }
 
     void operator--(int)
     {
-        _weight--;
+        _visited--;
     }
 
     const string &operator()() const
@@ -85,7 +85,7 @@ struct Node
 
     explicit operator bool() const
     {
-        if (((_node[0] >= 'a') and (_node[0] <= 'z')) and _weight)
+        if (((_node[0] >= 'a') and (_node[0] <= 'z')) and _visited)
             return false;
         return true;
     }
@@ -122,7 +122,7 @@ struct Tree
 
         for (auto &adjacent_item : *node)
         {
-           // cout << " CHECK[" << node() << "]:" << adjacent_item;
+            // cout << " CHECK[" << node() << "]:" << adjacent_item;
             for (auto &adjacent_node : _nodes)
             {
                 if (adjacent_node() == adjacent_item)
@@ -130,19 +130,19 @@ struct Tree
                     if (adjacent_node)
                     {
                         //cout << " SUB:" << adjacent_node() << endl;
-                        //cout << "GO(" << adjacent_node() << ":" << adjacent_node._weight << ":" << adjacent_node._adjacent.size() << ")";
+                        //cout << "GO(" << adjacent_node() << ":" << adjacent_node._visited << ":" << adjacent_node._adjacent.size() << ")";
                         traversAllAdjacentItem(adjacent_node, path, end);
                     }
                     else
                     {
                         //adjacent_node--;
-                        //cout << " DONE: " << adjacent_node() << " : " << adjacent_node._weight << " as:" << adjacent_node._adjacent.size() << endl;
+                        //cout << " DONE: " << adjacent_node() << " : " << adjacent_node._visited << " as:" << adjacent_node._adjacent.size() << endl;
                     }
                 }
-            }           
+            }
         }
-            path.pop_back();
-            node--;         
+        path.pop_back();
+        node--;
     }
 
     void findAllPathFrom(const string &start, const string &end)
