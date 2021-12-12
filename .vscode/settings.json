@@ -8,6 +8,7 @@
         "iomanip": "cpp",
         "vector": "cpp",
         "iostream": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "*.tcc": "cpp"
     }
 }

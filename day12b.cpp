@@ -105,7 +105,7 @@ ostream &operator<<(ostream &output, Node const &values)
 struct Tree
 {
     vector<Node> _nodes;
-    vector<vector<string>> paths;
+    vector<vector<string>> _paths;
 
     void traversAllAdjacentItem(Node &node, vector<string> &path, const string &start, const string &end)
     {
@@ -114,7 +114,7 @@ struct Tree
 
         if (node() == end)
         {
-            paths.push_back(path);
+            _paths.push_back(path);
             cout << "PATH:" << path;
             path.pop_back();
             node--;
@@ -161,7 +161,7 @@ struct Tree
             if (node() == start)
                 traversAllAdjacentItem(node, path, start, end);
 
-        cout << "SIZE: " << paths.size() << endl;
+        cout << "SIZE: " << _paths.size() << endl;
     }
 
     vector<Node> &operator*()
