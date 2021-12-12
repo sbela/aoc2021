@@ -108,13 +108,12 @@ struct Tree
     void traversAllAdjacentItem(Node &node, vector<string> &path, const string &end)
     {
         node++;
-        //cout << " IN:" << node() << " ";
         path.push_back(node());
 
         if (node() == end)
         {
             paths.push_back(path);
-            cout << "PATH:" << path << endl;
+            cout << "PATH:" << path;
             path.pop_back();
             node--;
             return;
@@ -122,22 +121,12 @@ struct Tree
 
         for (auto &adjacent_item : *node)
         {
-            // cout << " CHECK[" << node() << "]:" << adjacent_item;
             for (auto &adjacent_node : _nodes)
             {
                 if (adjacent_node() == adjacent_item)
                 {
                     if (adjacent_node)
-                    {
-                        //cout << " SUB:" << adjacent_node() << endl;
-                        //cout << "GO(" << adjacent_node() << ":" << adjacent_node._visited << ":" << adjacent_node._adjacent.size() << ")";
                         traversAllAdjacentItem(adjacent_node, path, end);
-                    }
-                    else
-                    {
-                        //adjacent_node--;
-                        //cout << " DONE: " << adjacent_node() << " : " << adjacent_node._visited << " as:" << adjacent_node._adjacent.size() << endl;
-                    }
                 }
             }
         }
@@ -155,7 +144,7 @@ struct Tree
                 traversAllAdjacentItem(node, path, end);
         }
 
-        cout << "SIZE:" << paths.size() << endl;
+        cout << "SIZE: " << paths.size() << endl;
     }
 
     vector<Node> &operator*()
@@ -183,8 +172,7 @@ struct Tree
                 if (not node.contains(to))
                 {
                     node.add(to);
-                    if (from != "start")
-                        addNode(to, from);
+                    addNode(to, from);
                 }
                 found = true;
                 break;
@@ -193,8 +181,7 @@ struct Tree
         if (not found)
         {
             _nodes.push_back(Node(from, to));
-            if (from != "start")
-                addNode(to, from);
+            addNode(to, from);
         }
     }
 };

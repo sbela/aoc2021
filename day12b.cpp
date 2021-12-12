@@ -85,10 +85,9 @@ struct Node
 
     explicit operator bool() const
     {
-        if ((_node[0] >= 'a') and (_node[0] <= 'z'))
+        if ((_node[0] >= 'a') and (_node[0] <= 'z') and (_visited > 0))
         {
-            if (_visited > 0)
-                return false;
+            return false;
         }
         return true;
     }
@@ -108,14 +107,13 @@ struct Tree
     vector<Node> _nodes;
     vector<vector<string>> paths;
 
-    void traversAllAdjacentItem(Node &node, vector<string> &path, const string &end)
+    void traversAllAdjacentItem(Node &node, vector<string> &path, const string &start, const string &end)
     {
         node++;
-        //cout << " IN:" << node() << " ";
         path.push_back(node());
 
         if (node() == end)
-        {      
+        {
             paths.push_back(path);
             cout << "PATH:" << path;
             path.pop_back();
@@ -125,40 +123,28 @@ struct Tree
 
         for (auto &adjacent_item : *node)
         {
-            //cout << " CHECK[" << node() << ":" << node._visited << "]:" << adjacent_item << endl;
             for (auto &adjacent_node : _nodes)
             {
                 if (adjacent_node() == adjacent_item)
                 {
                     if (adjacent_node)
                     {
-                        //cout << " SUB:" << adjacent_node() << endl;
-                        //cout << "GO(" << adjacent_node() << ":" << adjacent_node._visited << ":" << adjacent_node._adjacent.size() << ")";
-                        traversAllAdjacentItem(adjacent_node, path, end);
+                        traversAllAdjacentItem(adjacent_node, path, start, end);
                         break;
                     }
-                    else if (adjacent_node() != "start")
+                    else if (adjacent_node() != start)
                     {
                         map<string, int> count;
                         for (const auto &item : path)
-                        {
                             count[item]++;
-                        }
 
-                        //cout << "ITEM SIZE:" << count.size() << endl;
-                        bool found { false };
+                        bool found{false};
                         for (const auto &[key, value] : count)
-                        {
-                            //cout << "ITEM:" << key  << ":" << value << endl;
-                            if ((key[0] >= 'a') and (key[0] <= 'z'))
-                            {
-                                if (value > 1)
-                                    found = true;
-                            }
-                        }
+                            if ((key[0] >= 'a') and (key[0] <= 'z') and (value > 1))
+                                found = true;
 
                         if (not found)
-                            traversAllAdjacentItem(adjacent_node, path, end);
+                            traversAllAdjacentItem(adjacent_node, path, start, end);
                     }
                 }
             }
@@ -172,12 +158,10 @@ struct Tree
         vector<string> path;
 
         for (auto &node : _nodes)
-        {
             if (node() == start)
-                traversAllAdjacentItem(node, path, end);
-        }
+                traversAllAdjacentItem(node, path, start, end);
 
-        cout << "SIZE:" << paths.size() << endl;
+        cout << "SIZE: " << paths.size() << endl;
     }
 
     vector<Node> &operator*()
@@ -205,8 +189,7 @@ struct Tree
                 if (not node.contains(to))
                 {
                     node.add(to);
-                    if (from != "start")
-                        addNode(to, from);
+                    addNode(to, from);
                 }
                 found = true;
                 break;
@@ -215,8 +198,7 @@ struct Tree
         if (not found)
         {
             _nodes.push_back(Node(from, to));
-            if (from != "start")
-                addNode(to, from);
+            addNode(to, from);
         }
     }
 };
@@ -231,17 +213,18 @@ ostream &operator<<(ostream &output, Tree const &values)
 int main()
 {
     fstream input;
-    input.open("input12.txt", ios::in);
+    input.open("input12s.txt", ios::in);
     if (input.is_open())
     {
         string line;
         Tree tree;
         while (getline(input, line))
             tree.addNode(tokenize<string>(line, '-'));
+
         cout << "Tree:\n"
              << tree << endl;
 
-        tree.findAllPathFrom("start", "end");
+        tree.findAllPathFrom("c", "d");
     }
     else
         cout << "input12s.txt not open!\n";
