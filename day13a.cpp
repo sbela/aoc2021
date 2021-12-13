@@ -42,16 +42,19 @@ struct Paper
     // [Folding Direction (0:horizontal, 1:vertical), Folding Position]
     vector<tuple<FoldingDirection, int>> _folding;
 
-    void dump()
+    void dump(bool showPaper = true)
     {
         for (const auto &[direction, position] : _folding)
             cout << (direction == FoldingDirection::Horizontal ? "Horizontal: " : "Vertical: ") << position << endl;
 
-        for (size_t row = 0; row < _paper.size(); ++row)
+        if (showPaper)
         {
-            for (size_t col = 0; col < _paper[row].size(); ++col)
-                cout << _paper[row][col];
-            cout << endl;
+            for (size_t row = 0; row < _paper.size(); ++row)
+            {
+                for (size_t col = 0; col < _paper[row].size(); ++col)
+                    cout << _paper[row][col];
+                cout << endl;
+            }
         }
 
         count();
@@ -151,8 +154,11 @@ int main()
             paper._paper[row][col] = '#';
 
         for (const auto &[direction, position] : paper._folding)
+        {
             paper.fold(direction, position);
-        paper.dump();
+            break;
+        }
+        paper.dump(false);
     }
     else
         cout << "input13s.txt not open!\n";
