@@ -196,7 +196,7 @@ ostream &operator<<(ostream &output, Tree const &values)
 int main()
 {
     fstream input;
-    input.open("input12.txt", ios::in);
+    input.open("input12s.txt", ios::in);
     if (input.is_open())
     {
         string line;

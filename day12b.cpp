@@ -224,7 +224,7 @@ int main()
         cout << "Tree:\n"
              << tree << endl;
 
-        tree.findAllPathFrom("c", "d");
+        tree.findAllPathFrom("start", "end");
     }
     else
         cout << "input12s.txt not open!\n";
