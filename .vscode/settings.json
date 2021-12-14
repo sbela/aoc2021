@@ -9,6 +9,7 @@
         "vector": "cpp",
         "iostream": "cpp",
         "tuple": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "unordered_set": "cpp"
     }
 }
