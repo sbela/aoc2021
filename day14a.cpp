@@ -57,7 +57,7 @@ static const vector<T> tokenize(const string &text, char token)
 int main()
 {
     fstream input;
-    input.open("input14.txt", ios::in);
+    input.open("input14s.txt", ios::in);
     if (input.is_open())
     {
         string line;
@@ -109,7 +109,7 @@ int main()
         for (auto item : chain)
             histogram[item]++;
 
-        size_t smallest{INT_MAX}, biggest{0};
+        size_t smallest{SIZE_MAX}, biggest{0};
         for (const auto &[key, value] : histogram)
         {
             cout << key << ":" << value << endl;

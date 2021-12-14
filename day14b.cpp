@@ -1,0 +1,145 @@
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits.h>
+#include <list>
+#include <map>
+#include <set>
+#include <unordered_set>
+#include <ostream>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <type_traits>
+#include <vector>
+
+using namespace std;
+
+// trim from start (in place)
+inline void ltrim(std::string &s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch)
+                                    { return !std::isspace(ch); }));
+} // ltrim
+
+// trim from end (in place)
+inline void rtrim(std::string &s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch)
+                         { return !std::isspace(ch); })
+                .base(),
+            s.end());
+} // rtrim
+
+// trim from both ends (in place)
+inline void trim(std::string &s)
+{
+    ltrim(s);
+    rtrim(s);
+} // trim
+
+template <typename T>
+static const vector<T> tokenize(const string &text, char token)
+{
+    vector<T> data;
+    stringstream check(text);
+    string intermediate;
+    while (getline(check, intermediate, token))
+    {
+        if (intermediate.length())
+            data.push_back(intermediate);
+    }
+    return data;
+}
+
+int main()
+{
+    fstream input;
+    input.open("input14.txt", ios::in);
+    if (input.is_open())
+    {
+        string line;
+        string chain;
+        map<string, string> inserts;
+        while (getline(input, line))
+        {
+            if (chain.length() == 0)
+            {
+                chain = line;
+                cout << "Start from: " << chain << endl;
+            }
+            else if (line.length())
+            {
+                auto item = tokenize<string>(line, '-');
+                auto key = item.front();
+                trim(key);
+                auto value = item.back().substr(2);
+                trim(value);
+                if (inserts.find(key) == inserts.end())
+                    inserts[key] = value;
+                else
+                    cout << "Already added:" << key << ":" << value << " <- " << key << ":" << inserts[key] << endl;
+            }
+        }
+
+        map<char, size_t> histogram;
+        for (auto item : chain)
+            histogram[item]++;
+
+        unordered_map<string, size_t> pairs;
+        for (size_t pos = 0; pos < (chain.size() - 1); ++pos)
+            pairs[chain.substr(pos, 2)]++;
+
+        for (int step = 0; step < 40; ++step)
+        {
+            unordered_map<string, size_t> new_pairs;
+            map<char, size_t> new_histogram{histogram};
+            for (const auto &[key, value] : pairs)
+            {
+                if (inserts.find(key) != inserts.end())
+                {
+                    auto new_item{key};
+                    new_item.insert(1, inserts[key]);
+                    new_pairs[new_item.substr(0, 2)] += value;
+                    new_pairs[new_item.substr(1)] += value;
+                    new_histogram[inserts[key][0]] += value;
+                }
+                else
+                    cout << "Missing pair: " << key << endl;
+            }
+
+            pairs = new_pairs;
+            histogram = new_histogram;
+            size_t sum{0};
+            for (const auto &[key, value] : histogram)
+                sum += value;
+            cout << "After step " << (step + 1) << ": " << sum << endl;
+        }
+
+        size_t smallest{SIZE_MAX}, biggest{0};
+        char s{'0'}, b{'0'};
+        for (const auto &[key, value] : histogram)
+        {
+            cout << key << ":" << value << endl;
+            if (smallest > value)
+            {
+                s = key;
+                smallest = value;
+            }
+            if (biggest < value)
+            {
+                b = key;
+                biggest = value;
+            }
+        }
+        cout << "Diff:"
+             << " s:" << s << " b:" << b << " diff: " << biggest - smallest << endl;
+    }
+    else
+        cout << "input14s.txt not open!\n";
+    return 0;
+}
