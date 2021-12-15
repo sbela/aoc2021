@@ -1,129 +1,159 @@
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <cstring>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <limits.h>
-#include <list>
-#include <map>
-#include <set>
-#include <unordered_set>
-#include <ostream>
-#include <sstream>
+#include <queue>
 #include <string>
-#include <tuple>
-#include <type_traits>
+#include <unordered_set>
 #include <vector>
-#include <stack>
+#include <iomanip>
 
-using namespace std;
-
-void dump(const vector<vector<int>> &cave_map)
+struct Point
 {
-    for (const auto &row : cave_map)
+    size_t row, col;
+    Point(const size_t row, const size_t col) : row(row), col(col) {}
+    bool operator==(const Point &p) const
     {
-        for (auto col : row)
-            cout << col;
-        cout << endl;
+        return row == p.row && col == p.col;
     }
-    cout << endl;
+    friend std::ostream &operator<<(std::ostream &os, const Point &p);
+};
+
+struct compare
+{
+    bool operator()(const std::pair<Point, int> &p1, const std::pair<Point, int> &p2) const
+    {
+        return p1.second > p2.second;
+    }
+};
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<std::vector<T>> &p)
+{
+    for (const auto &row : p)
+    {
+        for (const auto &col : row)
+            os << col;
+        os << '\n';
+    }
+    os << '\n';
+    return os;
 }
 
-// function to display the path
-vector<tuple<int, vector<int>>> path;
-void display(vector<int> &ans)
+std::ostream &operator<<(std::ostream &os, const Point &p)
 {
-    int sum { 0 };
-    for (auto i : ans)
-        sum += i;
-    path.push_back({ sum, ans });
+    os << "(" << p.row << ", " << p.col << ")";
+    return os;
 }
 
-// a function which check whether our step is safe or not
-bool issafe(int r, int c, vector<vector<int>> &visited, int n, int m)
+struct hash_point
 {
-    return (r < n and c < m and visited[r][c] != -1); // return true if all values satisfied else false
-}
-
-void FindPaths(vector<vector<int>> &grid, int r, int c, int n, int m, vector<int> &ans)
-{
-    // when we hit the last cell we reach to destination then directly push the path
-    if (r == n - 1 and c == m - 1)
+    std::size_t operator()(const Point &p) const
     {
-        ans.push_back(grid[r][c]);
-        display(ans);   // function to display the path stored in ans vector
-        ans.pop_back(); // pop back because we need to backtrack to explore more path
-        return;
+        return p.row * p.col;
+    }
+};
+
+int main(int argc, char *argv[])
+{
+    std::string input = "input15.txt";
+    if (argc > 1)
+    {
+        input = argv[1];
     }
 
-    // we will store the current value in ch and mark the visited place as -1
-    int ch = grid[r][c];
+    std::string line;
+    std::fstream file(input);
 
-    ans.push_back(ch); // push the path in ans array
-    grid[r][c] = -1;      // mark the visited place with -1
-
-    // if is it safe to take next downward step then take it
-    if (issafe(r + 1, c, grid, n, m))
+    std::vector<std::vector<int>> input_map;
+    while (std::getline(file, line))
     {
-        FindPaths(grid, r + 1, c, n, m, ans);
-    }
-
-    // if is it safe to take next rightward step then take it
-    if (issafe(r, c + 1, grid, n, m))
-    {
-        FindPaths(grid, r, c + 1, n, m, ans);
-    }
-
-    // backtracking step we need to make values original so to we can visit it by some another path
-    grid[r][c] = ch;
-
-    // remove the current path element we explore
-    ans.pop_back();
-    return;
-}
-
-int main()
-{
-    fstream input;
-    input.open("input15.txt", ios::in);
-    if (input.is_open())
-    {
-        string line;
-        string chain;
-        map<string, string> inserts;
-        vector<vector<int>> cave_map;
-        size_t row{0};
-        while (getline(input, line))
+        input_map.emplace_back();
+        for (const auto ele : line)
         {
-            if (not cave_map.size())
-                cave_map = vector<vector<int>>(line.length(), vector<int>(line.length(), 0));
-            for (size_t i = 0; i < line.length(); ++i)
-                cave_map[row][i] = line[i] - '0';
-            ++row;
+            input_map.back().emplace_back(ele - '0');
         }
-        //dump(cave_map);
+    }
 
-        vector<int> ans; // it will store the path which we have covered
+    constexpr int times{1};
+    std::vector<std::vector<int>> map(
+        input_map.size() * times,
+        std::vector<int>(input_map[0].size() * times, 0));
 
-        FindPaths(cave_map, 0, 0, cave_map.size(), cave_map.size(), ans); // here 0,0 are initial position to start with
-        int sum = 10000000/*, index { 0 }, sum_index { 0 }*/;
-        for (const auto &[_sum, _path] : path)
+    int offset = 0;
+    for (int m = 0; m < (times * times); m++)
+    {
+        const auto row_offset = (offset / times);
+        const auto col_offset = (offset % times);
+        const auto row_offset_m = row_offset * input_map.size();
+        const auto col_offset_m = col_offset * input_map[0].size();
+        for (size_t i = 0; i < input_map.size(); i++)
         {
-            if (_sum < sum) 
+            for (size_t j = 0; j < input_map[0].size(); j++)
             {
-                sum = _sum;
-                //sum_index = index;
+                auto &v = map[i + row_offset_m][j + col_offset_m];
+                v = (input_map[i][j] + (row_offset + col_offset));
+                if (v > 9)
+                {
+                    v = v % 9;
+                    if (v == 0)
+                    {
+                        v = 1;
+                    }
+                }
             }
-            //++index;
         }
-        /*for (auto _path : get<1>(path[sum_index]))
-            cout << _path << " ";*/
-        cout << endl;
-        cout << "Sum: " << (sum - 1) << endl;
+        offset += 1;
     }
-    else
-        cout << "input15s.txt not open!\n";
+
+    std::priority_queue<std::pair<Point, int>, std::vector<std::pair<Point, int>>, compare> q;
+    std::unordered_set<Point, hash_point> already_inserted;
+
+    const auto get_neighbours = [](const Point &p)
+    {
+        return std::vector<Point>{
+            Point(p.row + 1, p.col),
+            Point(p.row - 1, p.col),
+            Point(p.row, p.col + 1),
+            Point(p.row, p.col - 1)};
+    };
+
+    const auto n_rows = map.size();
+    const auto n_cols = map[0].size();
+
+    std::vector<std::vector<int>> visited(n_rows, std::vector<int>(n_cols, 0));
+
+    const auto start = Point(0, 0);
+    const auto goal = Point(n_rows - 1, n_cols - 1);
+
+    const auto in_bounds = [&n_rows, &n_cols](const Point &p)
+    {
+        return p.row < n_rows && p.col < n_cols;
+    };
+
+    q.emplace(start, 0);
+    size_t itcnt{0};
+    while (!q.empty())
+    {
+        itcnt++;
+        const auto [cp, cost] = q.top();
+        q.pop();
+        if (cp == goal)
+        {
+            std::cout << cost << '\n';
+            break;
+        }
+        for (const auto &n : get_neighbours(cp))
+        {
+            if (in_bounds(n) && already_inserted.find(n) == already_inserted.end())
+            {
+                //visited[n.row][n.col] = 1;
+                q.emplace(n, cost + map[n.row][n.col]);
+                //std::cout << n << ":" << cost + map[n.row][n.col] << " v:" << map[n.row][n.col] << " q:" << q.top().second << std::endl;
+                already_inserted.insert(n);
+            }
+        }
+        //std::cout << visited;
+    }
+    std::cout << "DONE in: " << itcnt << std::endl;
+
     return 0;
 }
