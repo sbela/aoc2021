@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     const auto n_rows = map.size();
     const auto n_cols = map[0].size();
 
-    std::vector<std::vector<int>> visited(n_rows, std::vector<int>(n_cols, 0));
+    //std::vector<std::vector<int>> visited(n_rows, std::vector<int>(n_cols, 0));
 
     const auto start = Point(0, 0);
     const auto goal = Point(n_rows - 1, n_cols - 1);
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
         }
         for (const auto &n : get_neighbours(cp))
         {
-            if (in_bounds(n) && already_inserted.find(n) == already_inserted.end())
+            if (in_bounds(n) and already_inserted.find(n) == already_inserted.end())
             {
                 //visited[n.row][n.col] = 1;
                 q.emplace(n, cost + map[n.row][n.col]);

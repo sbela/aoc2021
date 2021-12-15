@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
     const auto n_rows = map.size();
     const auto n_cols = map[0].size();
 
-    std::vector<std::vector<int>> visited(n_rows, std::vector<int>(n_cols, 0));
+    //std::vector<std::vector<int>> visited(n_rows, std::vector<int>(n_cols, 0));
 
     const auto start = Point(0, 0);
     const auto goal = Point(n_rows - 1, n_cols - 1);
