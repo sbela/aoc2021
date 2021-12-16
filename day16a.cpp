@@ -171,9 +171,7 @@ int main(int argc, char *argv[])
 {
     std::string input = "input16.txt";
     if (argc > 1)
-    {
         input = argv[1];
-    }
 
     std::string line;
     std::fstream file(input);
