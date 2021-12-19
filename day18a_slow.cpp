@@ -107,7 +107,7 @@ bool explode(std::string &input)
                             std::cout << "EXPL:" << expl << std::endl;
                             input.erase(i, rpos - i + 1);
                             input.insert(i, "0");
-                            //std::cout << "EX1: " << i << " : " << input << std::endl;
+                            std::cout << "EX1: " << i << " : " << input << std::endl;
                             {
                                 size_t p = expl.find(',');
                                 size_t l = expl.rfind('[', p);
@@ -134,7 +134,7 @@ bool explode(std::string &input)
                                         break;
                                     }
                                 }
-                                //std::cout << "EX2: " << i << " : " << input << std::endl;
+                                std::cout << "EX2: " << i << " : " << input << std::endl;
                                 for (size_t jobbra = i + 1; jobbra < input.length(); ++jobbra)
                                 {
                                     if (input[jobbra] != ']' and input[jobbra] != '[' and input[jobbra] != ',')
@@ -151,7 +151,7 @@ bool explode(std::string &input)
                                         break;
                                     }
                                 }
-                                //std::cout << "EX3 :" << input << std::endl;
+                                std::cout << "EX3 :" << input << std::endl;
                             }
                             //std::cout << "EXPLODE2:" << input << std::endl;
                             reScan = true;
@@ -193,7 +193,8 @@ bool split(std::string &input)
                     reScan = true;
                     n.clear();
                     ret = true;
-                    break;
+                    return true;
+                    //break;
                 }
                 n.clear();
             }
@@ -226,9 +227,9 @@ int main(int argc, char *argv[])
                 {
                     std::cout << "--> " << a << std::endl;
                     doAgain = false;
-                    while (explode(a))
+                    if (explode(a))
                         doAgain = true;
-                    while (split(a))
+                    else if (split(a))
                         doAgain = true;
                 } while (doAgain);
             }
@@ -241,6 +242,6 @@ int main(int argc, char *argv[])
             std::cout << "---------------" << std::endl;
         }
     }
-    //std::cout << "MAG: " << calculateMagnitude(a) << std::endl;
+    std::cout << "MAG: " << calculateMagnitude(a) << std::endl;
     return 0;
 }

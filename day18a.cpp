@@ -162,7 +162,7 @@ int calculateMagnitude(std::string input)
 
 int main(int argc, char *argv[])
 {
-    std::string input = "input18.txt";
+    std::string input = "input18s.txt";
     if (argc > 1)
         input = argv[1];
 
